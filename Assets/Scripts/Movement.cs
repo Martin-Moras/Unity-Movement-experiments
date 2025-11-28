@@ -96,10 +96,10 @@ public class Movement : MonoBehaviour
 			// Clamp to max force
 			if (forceOnB.magnitude > maxForce)
 				forceOnB = forceOnB.normalized * maxForce;
-
+			Debug.Log($"{rb.gameObject.name} force: {forceOnB.magnitude}");
 			bodyA.AddForceAtPosition(-forceOnB, posA);
 			bodyB.AddForceAtPosition(forceOnB, posB);
-			
+
 			void ManageTorque()
 			{
 				Vector2 r = posB - posA;
