@@ -37,7 +37,7 @@ public class Movement : MonoBehaviour
 	void FixedUpdate()
 	{
 		//rb.centerOfMass = centerOfMass.localPosition;
-		ApplyBoost();
+		//ApplyBoost();
 		//ApplyGlidingForce();
 		ApplyHammerForces();
 	}
@@ -63,7 +63,7 @@ public class Movement : MonoBehaviour
 	}
 	private void ApplyHammerForces()
 	{
-		ApplyRelativeOffsetForces(rb, hammerL_Rb, 
+		ApplyRelativeOffsetForces(rb, hammerL_Rb,
 									move.ReadValue<Vector2>() * hammerOffsetDistance,
 									hand_L.position, hammerL_Rb.worldCenterOfMass,
 									stiffness, damping, maxForce);
@@ -73,7 +73,7 @@ public class Movement : MonoBehaviour
 									stiffness, damping, maxForce);
 
 		void ApplyRelativeOffsetForces(Rigidbody2D bodyA, Rigidbody2D bodyB,
-										Vector2 desiredOffset, 
+										Vector2 desiredOffset,
 										Vector2 forceOffsetA, Vector2 forceOffsetB,
 										float stiffness = 200f, float damping = 20f, float maxForce = 1000f)
 		{
@@ -98,11 +98,16 @@ public class Movement : MonoBehaviour
 				forceOnB = forceOnB.normalized * maxForce;
 
 			bodyA.AddForceAtPosition(-forceOnB, posA);
-			Vector2 r = posB - posA;
-			float torqueOnHammer = r.x * forceOnB.y - r.y * forceOnB.x;
-			// Debug.Log($"Torque on hammer: {torqueOnHammer}");
-			bodyA.AddTorque(-torqueOnHammer);
 			bodyB.AddForceAtPosition(forceOnB, posB);
+			
+			void ManageTorque()
+			{
+				Vector2 r = posB - posA;
+				float torqueOnHammer = r.x * forceOnB.y - r.y * forceOnB.x;
+				// Debug.Log($"Torque on hammer: {torqueOnHammer}");
+				bodyA.AddTorque(-torqueOnHammer);
+
+			}
 		}
 	}
 
