@@ -21,12 +21,13 @@ public class Hand : MonoBehaviour
 	public Transform centerOfMass;
 	private List<GrabStruct> grabJoints = new();
 	public float hammerOffsetDistance = 5f;
-	public Vector2 handOffsetNormalized;
+	public Vector2 handOffset;
 	public float gripForce;
 	public float gripStrength = 10f;
 	public float stiffness = 200f;
 	public float damping = 5f;
 	public float maxForce = 1000f;
+	public float jointBreakTorque = 0f;
 
 	public void HandConstructor(Rigidbody2D attachedBodyRb, Transform pivotPoint)
 	{
@@ -65,7 +66,7 @@ public class Hand : MonoBehaviour
 	private void ApplyHammerForces()
 	{
 		ApplyRelativeOffsetForces(attachedBodyRb, HandRb,
-									handOffsetNormalized * hammerOffsetDistance,
+									handOffset * hammerOffsetDistance,
 									pivotPoint.position, HandRb.worldCenterOfMass,
 									stiffness, damping, maxForce);
 
@@ -112,6 +113,12 @@ public class Hand : MonoBehaviour
 		// Remove joints if grip force is released
 		foreach (var grabJoint in grabJoints.ToArray())
 		{
+			if (grabJoint.joint == null || grabJoint.grabbed_Collider == null)
+			{
+				Debug.Log("Grabbed object or joint is null, removing grab joint.");
+				grabJoints.Remove(grabJoint);
+				continue;
+			}
 			// Debug.Log($"Reaction Force Magnitude: {grabJoint.joint.reactionForce.magnitude}, Grip Strength * Grip Force: {gripStrength * gripForce}");
 			if (grabJoint.joint.reactionForce.magnitude > gripStrength * gripForce)
 			{
@@ -146,6 +153,7 @@ public class Hand : MonoBehaviour
 				joint.enableCollision = true;
 				var otherRb = contactCollider.attachedRigidbody;
 				joint.anchor = joint.transform.InverseTransformPoint(contactPoint);
+				joint.breakTorque = jointBreakTorque;
 				if (otherRb != null)
 				{
 					joint.connectedBody = otherRb;
@@ -153,7 +161,6 @@ public class Hand : MonoBehaviour
 				}
 				else
 				{
-					joint.connectedBody = null;
 					joint.connectedAnchor = joint.transform.InverseTransformPoint(contactPoint);;
 				}
 			}

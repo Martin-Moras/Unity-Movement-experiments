@@ -46,10 +46,10 @@ public class Movement : MonoBehaviour
 	// Update is called once per frame
 	void FixedUpdate()
 	{
-		Hand_L.handOffsetNormalized = move.ReadValue<Vector2>().normalized;
+		Hand_L.handOffset = move.ReadValue<Vector2>();
 		Hand_L.gripForce = grab_l.ReadValue<float>();
 
-		Hand_R.handOffsetNormalized = look.ReadValue<Vector2>().normalized;
+		Hand_R.handOffset = look.ReadValue<Vector2>();
 		Hand_R.gripForce = grab_r.ReadValue<float>();
 	}
 	void LateUpdate()
