@@ -21,7 +21,7 @@ public class Hand : MonoBehaviour
 	public Transform centerOfMass;
 	private List<GrabStruct> grabJoints = new();
 	public float hammerOffsetDistance = 5f;
-	public Vector2 handOffsetNormalized;
+	public Vector2 handOffset;
 	public float gripForce;
 	public float gripStrength = 10f;
 	public float stiffness = 200f;
@@ -65,7 +65,7 @@ public class Hand : MonoBehaviour
 	private void ApplyHammerForces()
 	{
 		ApplyRelativeOffsetForces(attachedBodyRb, HandRb,
-									handOffsetNormalized * hammerOffsetDistance,
+									handOffset * hammerOffsetDistance,
 									pivotPoint.position, HandRb.worldCenterOfMass,
 									stiffness, damping, maxForce);
 
