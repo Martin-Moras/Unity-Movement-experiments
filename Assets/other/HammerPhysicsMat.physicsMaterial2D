@@ -8,7 +8,7 @@ PhysicsMaterial2D:
   m_PrefabAsset: {fileID: 0}
   m_Name: HammerPhysicsMat
   serializedVersion: 2
-  friction: 100000
+  friction: 5
   bounciness: 0
-  m_FrictionCombine: 4
+  m_FrictionCombine: 0
   m_BounceCombine: 3
