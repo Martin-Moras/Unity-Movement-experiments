@@ -25,7 +25,6 @@ public class Hand : MonoBehaviour
 	private List<GrabStruct> grabJoints = new();
 	public float hammerOffsetDistance = 5f;
 	public Vector2 handOffset;
-	public Vector2 handOffset;
 	public float gripForce;
 	public float gripStrength = 10f;
 	public float stiffness = 200f;
