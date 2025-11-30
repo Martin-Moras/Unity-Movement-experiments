@@ -1,4 +1,6 @@
+using System.Data;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Glider : MonoBehaviour
 {
@@ -6,14 +8,22 @@ public class Glider : MonoBehaviour
 	[Header("Gliding Settings")]
 	public float glidingCoefficient = 1;
 	public float glidingEffizency = 1f;
+	[Header("Boost Settings")]
+	private InputAction boost;
+	public float boostStrength = 10f;
 	void Start()
 	{
 		rb = GetComponent<Rigidbody2D>();
+		boost = InputSystem.actions.FindAction("Boost");
 	}
-
 	void FixedUpdate()
 	{
 		ApplyGlidingForce();
+		Boost();
+	}
+	private void Boost()
+	{
+		rb.AddForce(transform.right * boost.ReadValue<float>() * boostStrength);
 	}
 	private void ApplyGlidingForce()
 	{
@@ -24,10 +34,14 @@ public class Glider : MonoBehaviour
 		// Vector2 verticalVelDir = verticalVel.normalized;
 		// float verticalSpeed = verticalVel.magnitude;
 
-		Vector2 glideVel = Vector2.Dot(transform.right, verticalVel) * transform.right * glidingCoefficient;
+		Vector2 glideVel = -ReflectVector(verticalVel, transform.up).normalized * glidingCoefficient * verticalVel.magnitude * verticalVel.magnitude;
 
-		rb.AddForce(-verticalVel * glidingCoefficient);
-		rb.AddForce(glideVel * glidingEffizency);
+		rb.AddForce(glideVel * glidingEffizency, ForceMode2D.Impulse);
 		Debug.DrawLine(transform.position, transform.position + (Vector3)glideVel, Color.red);
+	}
+
+	public Vector3 ReflectVector(Vector3 v, Vector3 reflactionAxisNormalized)
+	{
+		return 2f * Vector3.Dot(v, reflactionAxisNormalized) * reflactionAxisNormalized - v;
 	}
 }

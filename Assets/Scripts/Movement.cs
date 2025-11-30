@@ -51,6 +51,7 @@ public class Movement : MonoBehaviour
 
 		Hand_R.handOffset = look.ReadValue<Vector2>();
 		Hand_R.gripForce = grab_r.ReadValue<float>();
+
 	}
 	void LateUpdate()
 	{
