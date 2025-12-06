@@ -270,8 +270,9 @@ MonoBehaviour:
   dampening_ErrorBased: 5
   maxForce: 500
   jointBreakTorque: 0
-  rotationProportional: 10
+  rotationProportional: 50
   rotationDerivitive: 0.001
+  rotationIntegral: 10000000
   maxRotationTorque: 1000
   maxAngularSpeed: 10
 --- !u!212 &1662409666626948132
@@ -394,7 +395,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!120 &8586241242644078315
 LineRenderer:
   serializedVersion: 2

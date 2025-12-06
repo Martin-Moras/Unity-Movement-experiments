@@ -3,6 +3,7 @@ using UnityEngine.InputSystem;
 using System.Collections.Generic;
 using TMPro;
 using Unity.Mathematics;
+using Unity.VisualScripting;
 
 public class Hand : MonoBehaviour
 {
@@ -35,8 +36,10 @@ public class Hand : MonoBehaviour
 	[Header("Rotation Settings")]
 	public float rotationProportional = 5f;
 	public float rotationDerivitive = 1f;
+	public float rotationIntegral = 1f;
 	public float maxRotationTorque = 100f;
 	public float maxAngularSpeed = 0f; // 0 = no limit
+	private float lastFrame_errorVelocity;
 
 	public void HandConstructor(Rigidbody2D attachedBodyRb, Transform pivotPoint)
 	{
@@ -72,7 +75,7 @@ public class Hand : MonoBehaviour
 	{
 		ApplyHammerForces();
 		ManageGrabing();
-		ManageRotation();
+		// ManageRotation();
 	}
 	private void ApplyHammerForces()
 	{
@@ -166,13 +169,19 @@ public class Hand : MonoBehaviour
 			// Current angle in degrees
 			float currentAngle = rbToRotate.rotation; // same as transform.eulerAngles.z but better for physics
 													  // Shortest signed angle difference (-180,180]
-			float error = Mathf.DeltaAngle(currentAngle, targetAngle);
+			float error = Mathf.DeltaAngle(currentAngle % 360, targetAngle);
 
 			// Convert angular velocity (deg/s) from radians/s returned by Rigidbody2D
 			float angularVelocityDeg = rbToRotate.angularVelocity; // Rigidbody2D.angularVelocity is in degrees/sec
+			float angularAcceleration = math.abs(lastFrame_errorVelocity - angularVelocityDeg) / Time.fixedDeltaTime;
 
+			float targetVelocity = error * proportional;
+			float errorVelocity = targetVelocity - angularVelocityDeg;
+			float errorVelChange = lastFrame_errorVelocity - errorVelocity;
+			errorVelocity += errorVelChange * rotationIntegral;
 			// PD controller: torque = kP*error - kD*angularVelocity
-			float torque = proportional * error - dirivitive * angularVelocityDeg;
+			float torque = errorVelocity * rotationDerivitive;
+
 
 			// Clamp torque
 			torque = Mathf.Clamp(torque, -maxTorque, maxTorque);
@@ -186,9 +195,12 @@ public class Hand : MonoBehaviour
 			// }
 
 			rbToRotate.AddTorque(torque);
-			Debug.Log($"Hand Rotate Target Angle: {targetAngle}, Current Angle: {currentAngle}, Error: {error}, Angular Velocity Deg: {angularVelocityDeg}, Applied Torque: {torque}");
+			if (name == "Hand_L")
+				Debug.Log($"Angular error: {errorVelocity}, Error: {error}, Angular Velocity Deg: {angularVelocityDeg}, Applied Torque: {torque}");
 			Debug.DrawLine(rbToRotate.position, rbToRotate.position + Vector2.up * 2, Color.red);
 			Debug.DrawLine(rbToRotate.position, rbToRotate.position + Vector2.up * torque / maxTorque * 2, Color.green);
+
+			lastFrame_errorVelocity = errorVelocity;
 		}
 	}
 	private void ManageGrabing()

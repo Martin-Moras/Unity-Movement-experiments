@@ -99,6 +99,7 @@ public class Movement : MonoBehaviour
 		boost = InputSystem.actions.FindAction("Boost");
 		grab_r = InputSystem.actions.FindAction("Grab_R");
 		grab_l = InputSystem.actions.FindAction("Grab_L");
+		
 		void InitializeHands()
 		{
 			Hand_L = InitHand("Hand_L", handPivotPoint_L);
